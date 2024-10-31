@@ -8,7 +8,7 @@ const initialState = [
 	{
 		id: 2,
 		value: 0,
-	},
+	}
 ];
 
 const countersSlice = createSlice({
