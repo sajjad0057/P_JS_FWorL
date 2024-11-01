@@ -64,7 +64,7 @@ const Navbar = () => {
 				</div>
 			</div>
 			{/* RIGHT */}
-			<div className="w-[30%] flex item-center gao-4 xl:gap-8 justify-end">
+			<div className="w-[30%] flex item-center gap-4 xl:gap-8 justify-end">
 				<ClerkLoading>
 					<div className="flex justify-center items-center">
 						<div className="animate-spin rounded-full h-4 w-4 border-t-4 border-gray-500"></div>
