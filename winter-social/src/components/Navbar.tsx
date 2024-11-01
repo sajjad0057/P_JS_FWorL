@@ -55,8 +55,12 @@ const Navbar = () => {
 					</Link>
 				</div>
 				<div className="hidden xl:flex p-1 bg-slate-100 items-center mx-2 rounded-xl">
-					<input type="text" placeholder="search..." className="bg-transparent outline-none"/>
-					<Image src="/search.png" alt="search" width={14} height={14}/>
+					<input
+						type="text"
+						placeholder="search..."
+						className="bg-transparent outline-none"
+					/>
+					<Image src="/search.png" alt="search" width={14} height={14} />
 				</div>
 			</div>
 			{/* RIGHT */}
