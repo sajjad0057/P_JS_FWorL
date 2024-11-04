@@ -26,7 +26,7 @@ const Post = () => {
 						src="/img/colorfull_bird.jpg"
 						alt=""
 						fill
-						rounded-md
+						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 						className="object-cover rounded-md"
 					/>
 				</div>
@@ -72,7 +72,7 @@ const Post = () => {
 							167 <span className="hidden md:inline"> Likes</span>
 						</span>
 					</div>
-          <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
+					<div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
 						<Image
 							src="/comment.png"
 							width={16}
@@ -85,10 +85,9 @@ const Post = () => {
 							167 <span className="hidden md:inline"> Comments</span>
 						</span>
 					</div>
-          
 				</div>
 				<div className="">
-        <div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
+					<div className="flex items-center gap-4 bg-slate-50 p-2 rounded-xl">
 						<Image
 							src="/share.png"
 							width={16}
@@ -101,9 +100,9 @@ const Post = () => {
 							167 <span className="hidden md:inline"> Shares</span>
 						</span>
 					</div>
-        </div>
+				</div>
 			</div>
-      <Comments/>
+			<Comments />
 		</div>
 	);
 };
