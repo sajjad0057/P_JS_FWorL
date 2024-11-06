@@ -23,16 +23,23 @@ const ProfileCard = () => {
 			<div className="flex flex-col gap-2 items-center">
 				<span className="font-semibold">Hosne Hazan</span>
 				<div className="flex items-center gap-2">
-					<div className="flex">
+					<div className="flex gap-1">
 						<Image
-							src="/img/face_colors.jpg"
+							src="/img/emoji_crying.jpg"
 							alt=""
 							height={12}
 							width={12}
 							className="rounded-full object-cover w-3 h-3 "
 						/>
 						<Image
-							src="/img/face_colors.jpg"
+							src="/img/colorful_leaf.jpg"
+							alt=""
+							height={12}
+							width={12}
+							className="rounded-full object-cover w-3 h-3 "
+						/>
+						<Image
+							src="/img/female_1.jpg"
 							alt=""
 							height={12}
 							width={12}
