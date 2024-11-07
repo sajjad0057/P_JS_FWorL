@@ -21,7 +21,7 @@ const ProfileCard = () => {
 				/>
 			</div>
 			<div className="flex flex-col gap-2 items-center">
-				<span className="font-semibold">Hosne Hazan</span>
+				<span className="font-semibold">Hosne Zahan</span>
 				<div className="flex items-center gap-2">
 					<div className="flex gap-1">
 						<Image
