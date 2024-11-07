@@ -13,6 +13,7 @@ const AddPost = async () => {
 		const desc = formData.get("desc") as string;
 
 		if (desc === null || desc === "" || desc === undefined) return;
+		
 		try {
 			const res = await prisma.post.create({
 				data: {
