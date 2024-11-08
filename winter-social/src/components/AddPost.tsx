@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 
 const AddPost = async () => {
 	const { userId } = await auth();
-	console.log(userId);
+	//console.log(userId);
 	const testAction = async (formData: FormData) => {
 		"use server";
 		if (!userId) return;

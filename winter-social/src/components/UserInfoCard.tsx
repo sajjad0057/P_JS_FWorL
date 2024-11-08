@@ -1,8 +1,55 @@
+import prisma from "@/lib/client";
+import { auth } from "@clerk/nextjs/server";
+import { User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const UserInfoCard = ({ userId }: { userId?: string }) => {
+const UserInfoCard = async ({ user }: { user: User }) => {
+	const createdAtDate = new Date(user.createdAt);
+	const formattedDate = createdAtDate.toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+
+	let isUserBlocked: boolean = false;
+	let isFollowing: boolean = false;
+	let isFollowingReqSent: boolean = false;
+
+	const { userId: currentUserId } = await auth();
+
+	if (currentUserId) {
+		const blockResult = await prisma.block.findFirst({
+			where: {
+				blockerId: currentUserId,
+				blockedId: user.id,
+			},
+		});
+
+		blockResult ? (isUserBlocked = true) : (isUserBlocked = false);
+
+		const followResult = await prisma.follower.findFirst({
+			where: {
+				followerId: currentUserId,
+				followingId: user.id,
+			},
+		});
+
+		followResult ? (isFollowing = true) : (isFollowing = false);
+
+		const followReqResult = await prisma.followRequest.findFirst({
+			where: {
+				senderId: currentUserId,
+				receiverId: user.id,
+			},
+		});
+
+		followReqResult
+			? (isFollowingReqSent = true)
+			: (isFollowingReqSent = false);
+	}
+
 	return (
 		<div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4">
 			{/* TOP  */}
@@ -15,48 +62,61 @@ const UserInfoCard = ({ userId }: { userId?: string }) => {
 			{/* BOTTOM  */}
 			<div className="flex flex-col gap-4 text-gray-500">
 				<div className="flex items-center gap-2">
-					<span className="text-xl font-bold">Imran Khan</span>
-					<span className="text-sm">@imrantyp</span>
-				</div>
-				<p>
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae
-					accusantium provident incidunt tenetur nemo! Nisi.
-				</p>
-				<div className="flex item-cemter gap-2">
-					<Image src="/map.png" alt="map" width={16} height={16} />
-					<span>
-						Living in <b>Rangpur</b>
+					<span className="text-xl font-bold">
+						{user.name && user.surname
+							? `${user.name} ${user.surname}`
+							: user.username}
 					</span>
+					<span className="text-sm">@{user.username}</span>
 				</div>
-				<div className="flex item-cemter gap-2">
-					<Image src="/school.png" alt="map" width={16} height={16} />
-					<span>
-						Went to <b>Rangpur public school, Rangpur</b>
-					</span>
-				</div>
-				<div className="flex item-cemter gap-2">
-					<Image src="/work.png" alt="map" width={16} height={16} />
-					<span>
-						Work at <b>Winter Inc.</b>
-					</span>
-				</div>
-				<div className="flex items-center justify-between">
-					<div className="flex gap-1 items-center">
-						<Image src="/link.png" alt="" width={16} height={16} />
-						<Link
-							href="https://www.facebook.com/profile.php?id=100015968622463"
-							className="text-blue-500 font-medium"
-						>
-							Imran.dev
-						</Link>
+				{user.description && <p>{user.description}</p>}
+				{user.city && (
+					<div className="flex item-cemter gap-2">
+						<Image src="/map.png" alt="map" width={16} height={16} />
+						<span>
+							Living in <b>{user.city}</b>
+						</span>
 					</div>
+				)}
+				{user.school && (
+					<div className="flex item-cemter gap-2">
+						<Image src="/school.png" alt="map" width={16} height={16} />
+						<span>
+							Went to <b>{user.school}</b>
+						</span>
+					</div>
+				)}
+
+				{user.work && (
+					<div className="flex item-cemter gap-2">
+						<Image src="/work.png" alt="map" width={16} height={16} />
+						<span>
+							Work at <b>{user.work}</b>
+						</span>
+					</div>
+				)}
+				<div className="flex items-center justify-between">
+					{user.website && (
+						<div className="flex gap-1 items-center">
+							<Image src="/link.png" alt="" width={16} height={16} />
+							<Link href={user.website} className="text-blue-500 font-medium">
+								{user.name && user.surname
+									? `${user.name} ${user.surname}`
+									: user.username}
+							</Link>
+						</div>
+					)}
 					<div className="flex gap-1 items-center">
 						<Image src="/date.png" alt="" width={16} height={16} />
-						<span>Joined November 2014</span>
+						<span>Joined {formattedDate}</span>
 					</div>
 				</div>
-        <button className="bg-blue-500 text-white text-sm rounded-md p-1">Follow</button>
-        <span className="text-orange-400 self-end text-xs cursor-pointer px-2">Block User</span>
+				<button className="bg-blue-500 text-white text-sm rounded-md p-1">
+					Follow
+				</button>
+				<span className="text-orange-400 self-end text-xs cursor-pointer px-2">
+					Block User
+				</span>
 			</div>
 		</div>
 	);
