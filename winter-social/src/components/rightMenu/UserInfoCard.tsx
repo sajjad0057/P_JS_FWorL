@@ -4,6 +4,7 @@ import { User } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import UserInfoCardInterAction from "./UserInfoCardInterAction";
 
 const UserInfoCard = async ({ user }: { user: User }) => {
 	const createdAtDate = new Date(user.createdAt);
@@ -111,12 +112,14 @@ const UserInfoCard = async ({ user }: { user: User }) => {
 						<span>Joined {formattedDate}</span>
 					</div>
 				</div>
-				<button className="bg-blue-500 text-white text-sm rounded-md p-1">
-					Follow
-				</button>
-				<span className="text-orange-400 self-end text-xs cursor-pointer px-2">
-					Block User
-				</span>
+				<UserInfoCardInterAction
+					userId={user.id}
+					currentUserId={currentUserId}
+					isUserBlocked={isUserBlocked}
+					isFollowing = {isFollowing}
+					isFollowingReqSent = {isFollowingReqSent}
+
+				/>
 			</div>
 		</div>
 	);

@@ -17,7 +17,6 @@ const RightMenu = ({ user }: { user?: User }) => {
 					</Suspense>
 					<Suspense fallback={<DotDotLoading />}>
 						<UserMediaCard user={user} />
-						<DotDotLoading />
 					</Suspense>
 				</>
 			) : null}
