@@ -1,6 +1,6 @@
-import Feed from "@/components/Feed";
-import LeftMenu from "@/components/LeftMenu";
-import RightMenu from "@/components/RightMenu";
+import Feed from "@/components/feed/Feed";
+import LeftMenu from "@/components/leftMenu/LeftMenu";
+import RightMenu from "@/components/rightMenu/RightMenu";
 import prisma from "@/lib/client";
 import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
@@ -8,9 +8,8 @@ import { notFound } from "next/navigation";
 import React from "react";
 
 const ProfilePage = async ({ params }: { params: { username: string } }) => {
-
-  const awaitedParams = await params;
-  const _username = awaitedParams.username;
+	const awaitedParams = await params;
+	const _username = awaitedParams.username;
 
 	const user = await prisma.user.findFirst({
 		where: {
@@ -71,6 +70,7 @@ const ProfilePage = async ({ params }: { params: { username: string } }) => {
 								src={user.cover || "/noCover.png"}
 								alt=""
 								fill
+								sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 								className="object-cover rounded-md"
 							/>
 							<Image
