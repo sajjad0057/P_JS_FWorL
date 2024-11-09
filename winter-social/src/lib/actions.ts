@@ -2,6 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 
+// Handle User Following and Unfollow
 export const switchFollow = async (userId: string) => {
 	const { userId: currentUserId } = await auth();
 
@@ -46,7 +47,48 @@ export const switchFollow = async (userId: string) => {
 			}
 		}
 	} catch (err) {
-		console.log(err);
-		throw new Error("Something went wrong from action.ts file !");
+		console.log(`Error from action.ts : ${JSON.stringify(err)}`);
+		throw new Error(
+			"Something went wrong from switchFollow -> action.ts file !"
+		);
+	}
+};
+
+
+// handle user blocking or unblocking
+export const switchBlock = async (userId: string) => {
+	const { userId: currentUserId } = await auth();
+
+	if (!currentUserId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		const existingBlock = await prisma.block.findFirst({
+			where: {
+				blockerId: currentUserId,
+				blockedId: userId,
+			},
+		});
+
+		if (existingBlock) {
+			await prisma.block.delete({
+				where: {
+					id: existingBlock.id,
+				},
+			});
+		} else {
+			await prisma.block.create({
+				data: {
+					blockerId: currentUserId,
+					blockedId: userId,
+				},
+			});
+		}
+	} catch (error) {
+		console.log(`Error from action.ts : ${JSON.stringify(error)}`);
+		throw new Error(
+			"Something went wrong from switchBlock -> action.ts file  !"
+		);
 	}
 };
