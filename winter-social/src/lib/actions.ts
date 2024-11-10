@@ -47,13 +47,14 @@ export const switchFollow = async (userId: string) => {
 			}
 		}
 	} catch (err) {
-		console.log(`Error from action.ts : ${JSON.stringify(err)}`);
+		console.log(
+			`Error from action.ts -> switchFollow : ${JSON.stringify(err)}`
+		);
 		throw new Error(
 			"Something went wrong from switchFollow -> action.ts file !"
 		);
 	}
 };
-
 
 // handle user blocking or unblocking
 export const switchBlock = async (userId: string) => {
@@ -86,7 +87,80 @@ export const switchBlock = async (userId: string) => {
 			});
 		}
 	} catch (error) {
-		console.log(`Error from action.ts : ${JSON.stringify(error)}`);
+		console.log(
+			`Error from action.ts -> switchBlock : ${JSON.stringify(error)}`
+		);
+		throw new Error(
+			"Something went wrong from switchBlock -> action.ts file  !"
+		);
+	}
+};
+
+export const acceptFollowRequest = async (userId: string) => {
+	const { userId: currentUserId } = await auth();
+
+	if (!currentUserId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		const existingFollowRequest = await prisma.followRequest.findFirst({
+			where: {
+				senderId: userId,
+				receiverId: currentUserId,
+			},
+		});
+
+		if (existingFollowRequest) {
+			await prisma.followRequest.delete({
+				where: {
+					id: existingFollowRequest.id,
+				},
+			});
+		}
+
+		await prisma.follower.create({
+			data: {
+				followerId: userId,
+				followingId: currentUserId,
+			},
+		});
+	} catch (error) {
+		console.log(
+			`Error from action.ts -> acceptFollowRequest : ${JSON.stringify(error)}`
+		);
+		throw new Error(
+			"Something went wrong from switchBlock -> action.ts file  !"
+		);
+	}
+};
+
+export const declineFollowRequest = async (userId: string) => {
+	const { userId: currentUserId } = await auth();
+
+	if (!currentUserId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		const existingFollowRequest = await prisma.followRequest.findFirst({
+			where: {
+				senderId: userId,
+				receiverId: currentUserId,
+			},
+		});
+
+		if (existingFollowRequest) {
+			await prisma.followRequest.delete({
+				where: {
+					id: existingFollowRequest.id,
+				},
+			});
+		}
+	} catch (error) {
+		console.log(
+			`Error from action.ts -> acceptFollowRequest : ${JSON.stringify(error)}`
+		);
 		throw new Error(
 			"Something went wrong from switchBlock -> action.ts file  !"
 		);
