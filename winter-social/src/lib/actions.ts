@@ -1,6 +1,7 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
+import { z } from "zod";
 
 // Handle User Following and Unfollow
 export const switchFollow = async (userId: string) => {
@@ -163,6 +164,63 @@ export const declineFollowRequest = async (userId: string) => {
 		);
 		throw new Error(
 			"Something went wrong from switchBlock -> action.ts file  !"
+		);
+	}
+};
+
+export const updateProfile = async (formData: FormData) => {
+	const fields = Object.fromEntries(formData);
+
+	console.log(`updateProfile -> action.ts file -> fields
+		 : ${JSON.stringify(fields)}`);
+
+	/** As we set default field value in form field so don't need to check empty string here, otherwise need it */
+	// const filteredFields = Object.fromEntries(
+	// 	Object.entries(fields).filter(([_, value]) => value !== "")
+	// );
+
+	// console.log(`updateProfile -> action.ts file -> filteredFields
+	// 	: ${JSON.stringify(filteredFields)}`);
+
+	const Profile = z.object({
+		cover: z.string().optional(),
+		name: z.string().max(60).optional(),
+		surname: z.string().max(60).optional(),
+		description: z.string().max(255).optional(),
+		city: z.string().max(60).optional(),
+		school: z.string().max(100).optional(),
+		work: z.string().max(100).optional(),
+		website: z.string().max(100).optional(),
+	});
+
+	const validatorFields = Profile.safeParse(fields);
+
+	///console.log(`...validatorFields.data -> ${JSON.stringify({...validatorFields.data})}`);
+
+	if (!validatorFields.success) {
+		console.log(validatorFields.error.flatten().fieldErrors);
+		return null;
+	}
+
+	const { userId } = await auth();
+
+	if (!userId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		await prisma.user.update({
+			where: {
+				id: userId,
+			},
+			data: { ...validatorFields.data },
+		});
+	} catch (error) {
+		console.log(
+			`Error from action.ts -> updateProfile : ${JSON.stringify(error)}`
+		);
+		throw new Error(
+			"Something went wrong from updateProfile -> action.ts file  !"
 		);
 	}
 };

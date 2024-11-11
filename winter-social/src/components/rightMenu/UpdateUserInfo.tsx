@@ -1,5 +1,6 @@
 "use client";
 
+import { updateProfile } from "@/lib/actions";
 import { User } from "@prisma/client";
 import Image from "next/image";
 import React, { useState } from "react";
@@ -18,7 +19,7 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 			{isOpen && (
 				<div className="absolute w-screen h-screen top-0 left-0 bg-black bg-opacity-50 flex items-center justify-center ">
 					<form
-						action=""
+						action={updateProfile}
 						className="relative p-12 bg-white rounded-lg shadow-md  text-gray-600 flex flex-col gap-2 w-full md:w-1/2 xl:w-1/3"
 					>
 						<h1 className="border rounded-md p-2">Update Profile</h1>
@@ -53,17 +54,21 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.name || ""}
+									defaultValue={user.name || ""}
+									name="name"
 								/>
 							</div>
 
 							<div className="flex flex-col gap-4">
 								<label htmlFor="" className="text-sm text-gray-500 ">
-									Surename
+									Surname
 								</label>
 								<input
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.surname || ""}
+									defaultValue={user.surname || ""}
+									name="surname"
 								/>
 							</div>
 
@@ -73,7 +78,9 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 								</label>
 								<textarea
 									placeholder={user.description || "ha ha ha"}
-                  className="border rounded-md px-3 py-1"
+									defaultValue={user.description || ""}
+									className="border rounded-md px-3 py-1"
+									name="description"
 								/>
 							</div>
 
@@ -85,6 +92,8 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.city || ""}
+									defaultValue={user.city || ""}
+									name="city"
 								/>
 							</div>
 
@@ -96,6 +105,8 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.school || ""}
+									defaultValue={user.school || ""}
+									name="school"
 								/>
 							</div>
 
@@ -107,6 +118,8 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.work || ""}
+									defaultValue={user.work || ""}
+									name="work"
 								/>
 							</div>
 
@@ -118,6 +131,8 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 									type="text"
 									className="ring-1 ring-gray-300 p-2 rounded-md text-sm"
 									placeholder={user.website || ""}
+									defaultValue={user.website || ""}
+									name="website"
 								/>
 							</div>
 						</div>
