@@ -3,25 +3,43 @@
 import { updateProfile } from "@/lib/actions";
 import { User } from "@prisma/client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
 import { CldUploadWidget } from "next-cloudinary";
+import { useRouter } from "next/navigation";
 
 const UpdateUserInfo = ({ user }: { user: User }) => {
 	const [isOpen, setOpen] = useState(false);
-	const [cover, setCover] = useState<any>("/img/noCover.jpg")
+	const [cover, setCover] = useState<any>("/img/noCover.jpg");
+
+	const [state, formAction] = useActionState(updateProfile, {
+		success: false,
+		error: false,
+	});
+
+	const router = useRouter();
+
+	const handleClose = () => {
+		setOpen(!isOpen);
+		state.success && router.refresh();
+	};
 
 	return (
 		<div className="">
 			<span
 				className="text-blue-500 text-xs cursor-pointer"
-				onClick={() => setOpen(!isOpen)}
+				onClick={handleClose}
 			>
 				Update
 			</span>
 			{isOpen && (
 				<div className="absolute w-screen h-screen top-0 left-0 bg-black bg-opacity-50 flex items-center justify-center ">
 					<form
-						action={ (formData) => updateProfile(formData, cover? cover.secure_url : "/noCover_2.png" )}
+						action={(formData) =>
+							formAction({
+								formData,
+								cover: cover ? cover.secure_url : "/noCover_2.png",
+							})
+						}
 						className="relative p-12 bg-white rounded-lg shadow-md  text-gray-600 flex flex-col gap-2 w-full md:w-1/2 xl:w-1/3"
 					>
 						<h1 className="border rounded-md p-2">Update Profile</h1>
@@ -30,10 +48,16 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 						</div>
 						<hr />
 
-						<CldUploadWidget uploadPreset="winter" onSuccess={(result) => setCover(result.info)}>
+						<CldUploadWidget
+							uploadPreset="winter"
+							onSuccess={(result) => setCover(result.info)}
+						>
 							{({ open }) => {
 								return (
-									<div className="flex flex-col gap-3 my-1" onClick={() => open()}>
+									<div
+										className="flex flex-col gap-3 my-1"
+										onClick={() => open()}
+									>
 										<label htmlFor="" className="px-1">
 											Cover Picture
 										</label>
@@ -149,9 +173,15 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 						<button className="bg-blue-500 p-1 mt-2 rounded-md text-white">
 							Update
 						</button>
+						{state?.success && (
+							<span className="text-green-500">Profile has been updated!</span>
+						)}
+						{state?.error && (
+							<span className="text-orange-500">Something went wrong!</span>
+						)}
 						<div
 							className="absolute text-xl right-2 top-3 cursor-pointer px-2 border rounded-md"
-							onClick={() => setOpen(!isOpen)}
+							onClick={handleClose}
 						>
 							<span>X</span>
 						</div>
@@ -163,3 +193,6 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 };
 
 export default UpdateUserInfo;
+function useRoute() {
+	throw new Error("Function not implemented.");
+}

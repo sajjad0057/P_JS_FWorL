@@ -168,11 +168,16 @@ export const declineFollowRequest = async (userId: string) => {
 	}
 };
 
-export const updateProfile = async (formData: FormData, cover : string) => {
+export const updateProfile = async (
+	prevState: { success: boolean; error: boolean },
+	payload: { formData: FormData; cover: string }
+) => {
+	const { formData, cover } = payload;
+
 	const fields = Object.fromEntries(formData);
 
-	console.log(`updateProfile -> action.ts file -> fields
-		 : ${JSON.stringify(fields)}`);
+	// console.log(`updateProfile -> action.ts file -> fields
+	// 	 : ${JSON.stringify(fields)}`);
 
 	/** As we set default field value in form field so don't need to check empty string here, otherwise need it */
 	// const filteredFields = Object.fromEntries(
@@ -193,19 +198,22 @@ export const updateProfile = async (formData: FormData, cover : string) => {
 		website: z.string().max(100).optional(),
 	});
 
-	const validatorFields = Profile.safeParse({...fields, cover});
+	const validatorFields = Profile.safeParse({ ...fields, cover });
 
 	///console.log(`...validatorFields.data -> ${JSON.stringify({...validatorFields.data})}`);
 
 	if (!validatorFields.success) {
 		console.log(validatorFields.error.flatten().fieldErrors);
-		return null;
+
+		return { success: false, error: true };
 	}
 
 	const { userId } = await auth();
 
 	if (!userId) {
-		throw new Error("User is not authenticated !");
+		console.log("User is not authenticated !");
+
+		return { success: false, error: true };
 	}
 
 	try {
@@ -215,12 +223,13 @@ export const updateProfile = async (formData: FormData, cover : string) => {
 			},
 			data: { ...validatorFields.data },
 		});
+
+		return { success: true, error: false };
 	} catch (error) {
 		console.log(
 			`Error from action.ts -> updateProfile : ${JSON.stringify(error)}`
 		);
-		throw new Error(
-			"Something went wrong from updateProfile -> action.ts file  !"
-		);
+
+		return { success: false, error: true };
 	}
 };
