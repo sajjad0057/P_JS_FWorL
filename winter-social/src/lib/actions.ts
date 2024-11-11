@@ -168,7 +168,7 @@ export const declineFollowRequest = async (userId: string) => {
 	}
 };
 
-export const updateProfile = async (formData: FormData) => {
+export const updateProfile = async (formData: FormData, cover : string) => {
 	const fields = Object.fromEntries(formData);
 
 	console.log(`updateProfile -> action.ts file -> fields
@@ -193,7 +193,7 @@ export const updateProfile = async (formData: FormData) => {
 		website: z.string().max(100).optional(),
 	});
 
-	const validatorFields = Profile.safeParse(fields);
+	const validatorFields = Profile.safeParse({...fields, cover});
 
 	///console.log(`...validatorFields.data -> ${JSON.stringify({...validatorFields.data})}`);
 
