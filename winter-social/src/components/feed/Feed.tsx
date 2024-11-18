@@ -1,18 +1,85 @@
 import React from "react";
-import Post from "./Post";
+import FeedPost from "./FeedPost";
+import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/client";
+import { Span } from "next/dist/trace";
 
-Post
+const Feed = async ({ username }: { username?: string }) => {
+	const { userId } = await auth();
 
-const Feed = () => {
+	let posts: any[] = [];
+
+	if (username) {
+		posts = await prisma.post.findMany({
+			where: {
+				user: {
+					username: username,
+				},
+			},
+			include: {
+				user: true,
+				likes: {
+					select: {
+						userId: true,
+					},
+				},
+				_count: {
+					select: {
+						comments: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+	}
+
+	if (!username && userId) {
+		const following = await prisma.follower.findMany({
+			where: {
+				followerId: userId,
+			},
+			select: {
+				followingId: true,
+			},
+		});
+
+		const followingIds = following.map((f) => f.followingId);
+		console.log(followingIds);
+
+		posts = await prisma.post.findMany({
+			where: {
+				userId: {
+					in: followingIds, ///এটি শুধুমাত্র সেই পোস্টগুলো ফেচ করবে, যেগুলোর userId, followingIds অ্যারের মধ্যে আছে।
+				},
+			},
+			include: {
+				user: true,
+				likes: {
+					select: {
+						userId: true,
+					},
+				},
+				_count: {
+					select: {
+						comments: true,
+					},
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+		});
+	}
+
 	return (
 		<div className="p-4 bg-white shadow-md rounded-lg flex flex-col gap-12">
-			<Post/>
-			<Post/>
-			<Post/>
-			<Post/>
-			<Post/>
-			<Post/>
-			<Post/>
+			{posts.length ? (
+				posts.map((post) => <FeedPost key={post.id} post={post} />)
+			) : (
+				<span className="m-auto text-gray-500 font-semibold text-sm">No posts found..!</span>
+			)}
 		</div>
 	);
 };
