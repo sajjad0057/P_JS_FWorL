@@ -2,6 +2,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "./client";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 // Handle User Following and Unfollow
 export const switchFollow = async (userId: string) => {
@@ -270,3 +271,69 @@ export const switchLike = async (postId: number) => {
 		throw new Error("Something went wrong from switchLike -> action.ts file !");
 	}
 };
+
+export const addComment = async (postId: number, desc: string) => {
+	const { userId } = await auth();
+
+	if (!userId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		const createdComment = await prisma.comment.create({
+			data: {
+				desc,
+				userId,
+				postId,
+			},
+			include: {
+				user: true,
+			},
+		});
+
+		return createdComment;
+
+	} catch (error) {
+		console.log(
+			`Error from action.ts -> addComment : ${JSON.stringify(error)}`
+		);
+		throw new Error("Something went wrong from addComment -> action.ts file !");
+	}
+};
+
+
+export const addPost = async (formData:FormData, img:string) =>{
+	
+	const {userId} = await auth();
+	if (!userId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	const desc = formData.get("desc") as string;
+
+	const Desc = z.string().min(1).max(255)
+
+	const validateDesc = Desc.safeParse(desc)
+ 
+	if(!validateDesc.success){
+		console.log(`Invalid Post text!`);
+		throw new Error(`INVALID POST TEXT !`)
+	}
+
+	try {
+		await prisma.post.create({
+			data:{
+				desc: validateDesc.data,
+				userId,
+				img
+			}
+		})
+		
+		revalidatePath("/");
+	} catch (error) {
+		console.log(
+			`Error from action.ts -> addPost : ${JSON.stringify(error)}`
+		);
+		throw new Error("Something went wrong from addPost -> action.ts file !");		
+	}
+}

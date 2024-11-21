@@ -55,7 +55,7 @@ const PostInteraction = ({
 								src={optimisticLike.isLiked ? "/liked.png" : "/like.png"}
 								width={16}
 								height={16}
-								alt=""
+								alt="like/unlike"
 								className="cursor-pointer"
 							/>
 						</button>
@@ -75,7 +75,7 @@ const PostInteraction = ({
 					/>
 					<span className="text-gray-300">|</span>
 					<span className="text-gray-500">
-						167 <span className="hidden md:inline"> Comments</span>
+						{commentNumber} <span className="hidden md:inline"> Comments</span>
 					</span>
 				</div>
 			</div>

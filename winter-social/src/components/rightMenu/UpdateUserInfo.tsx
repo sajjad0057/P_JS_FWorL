@@ -47,7 +47,7 @@ const UpdateUserInfo = ({ user }: { user: User }) => {
 							Use the navbar profile to change the avatar or username
 						</div>
 						<hr />
-
+						{/* COVER PIC UPLOAD  */}
 						<CldUploadWidget
 							uploadPreset="winter"
 							onSuccess={(result) => setCover(result.info)}

@@ -51,7 +51,7 @@ const Feed = async ({ username }: { username?: string }) => {
 		posts = await prisma.post.findMany({
 			where: {
 				userId: {
-					in: followingIds, ///এটি শুধুমাত্র সেই পোস্টগুলো ফেচ করবে, যেগুলোর userId, followingIds অ্যারের মধ্যে আছে।
+					in: [userId, ...followingIds], ///এটি শুধুমাত্র সেই পোস্টগুলো ফেচ করবে, যেগুলোর userId, followingIds অ্যারের মধ্যে আছে।
 				},
 			},
 			include: {
@@ -78,7 +78,9 @@ const Feed = async ({ username }: { username?: string }) => {
 			{posts.length ? (
 				posts.map((post) => <FeedPost key={post.id} post={post} />)
 			) : (
-				<span className="m-auto text-gray-500 font-semibold text-sm">No posts found..!</span>
+				<span className="m-auto text-gray-500 font-semibold text-sm">
+					No posts found..!
+				</span>
 			)}
 		</div>
 	);
