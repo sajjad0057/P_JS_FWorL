@@ -371,3 +371,24 @@ export const addStory = async (img: string) => {
 		throw new Error("Something went wrong from addPost -> action.ts file !");
 	}
 };
+
+
+export const deletePost = async (postId:number) =>{
+	const { userId } = await auth();
+	if (!userId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		await prisma.post.delete({
+			where:{
+				id: postId,
+				userId
+			}
+		})
+		revalidatePath("/")
+	} catch (error) {
+		console.log(`Error from action.ts -> addPost : ${JSON.stringify(error)}`);
+		throw new Error("Something went wrong from addPost -> action.ts file !");
+	}
+}
