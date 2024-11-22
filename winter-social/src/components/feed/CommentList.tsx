@@ -46,7 +46,10 @@ const CommentList = ({
 		try {
 			const createdComment = await addComment(postId, desc);
 			setCommentState((prev) => [createdComment, ...prev]);
-		} catch (error) {}
+		} catch (error) {
+			console.log(error);
+			throw error;	
+		}
 	};
 
 	const [optimisticComments, addOptimisticComment] = useOptimistic(

@@ -24,7 +24,7 @@ const AddPost = () => {
 			{/* AVATER */}
 			<Image
 				src={user?.imageUrl || "/noAvatar.png"}
-				alt=""
+				alt="img"
 				width={48}
 				height={48}
 				className="w-12 h-12 object-cover rounded-full"

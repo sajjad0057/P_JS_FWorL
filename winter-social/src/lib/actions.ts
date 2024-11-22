@@ -292,7 +292,6 @@ export const addComment = async (postId: number, desc: string) => {
 		});
 
 		return createdComment;
-
 	} catch (error) {
 		console.log(
 			`Error from action.ts -> addComment : ${JSON.stringify(error)}`
@@ -301,39 +300,74 @@ export const addComment = async (postId: number, desc: string) => {
 	}
 };
 
-
-export const addPost = async (formData:FormData, img:string) =>{
-	
-	const {userId} = await auth();
+export const addPost = async (formData: FormData, img: string) => {
+	const { userId } = await auth();
 	if (!userId) {
 		throw new Error("User is not authenticated !");
 	}
 
 	const desc = formData.get("desc") as string;
 
-	const Desc = z.string().min(1).max(255)
+	const Desc = z.string().min(1).max(5000);
 
-	const validateDesc = Desc.safeParse(desc)
- 
-	if(!validateDesc.success){
+	const validateDesc = Desc.safeParse(desc);
+
+	if (!validateDesc.success) {
 		console.log(`Invalid Post text!`);
-		throw new Error(`INVALID POST TEXT !`)
+		throw new Error(`INVALID POST TEXT !`);
 	}
 
 	try {
 		await prisma.post.create({
-			data:{
+			data: {
 				desc: validateDesc.data,
 				userId,
-				img
-			}
-		})
-		
+				img,
+			},
+		});
+
 		revalidatePath("/");
 	} catch (error) {
-		console.log(
-			`Error from action.ts -> addPost : ${JSON.stringify(error)}`
-		);
-		throw new Error("Something went wrong from addPost -> action.ts file !");		
+		console.log(`Error from action.ts -> addPost : ${JSON.stringify(error)}`);
+		throw new Error("Something went wrong from addPost -> action.ts file !");
 	}
-}
+};
+
+export const addStory = async (img: string) => {
+	const { userId } = await auth();
+	if (!userId) {
+		throw new Error("User is not authenticated !");
+	}
+
+	try {
+		const existingStory = await prisma.story.findFirst({
+			where: {
+				userId,
+			},
+		});
+
+		if (existingStory) {
+			await prisma.story.delete({
+				where: {
+					id: existingStory.id,
+				},
+			});
+		}
+
+		const createdStory = await prisma.story.create({
+			data: {
+				userId,
+				img,
+				expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+			},
+			include: {
+				user: true,
+			},
+		});
+
+		return createdStory;
+	} catch (error) {
+		console.log(`Error from action.ts -> addPost : ${JSON.stringify(error)}`);
+		throw new Error("Something went wrong from addPost -> action.ts file !");
+	}
+};
